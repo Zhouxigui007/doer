@@ -6,6 +6,7 @@
 	var message = {
 		"error": "参数类型错误"
 	};
+	var core_rnotwhite = /\S+/g;
 	var Doer = function(selector) {
 		return new Doer.prototype.init(selector);
 	}
@@ -13,7 +14,7 @@
 		constructor: Doer,
 		length: 0,
 		errors: function(data) {
-			if (typeof data != "string") {
+			if (!data || typeof data != "string") {
 				throw new Error(message.error);
 				return false;
 			}
@@ -66,16 +67,38 @@
 		},
 		addClass: function(cls) {
 			this.errors(cls);
-			var reg = new RegExp(/\s|^/g) + cls + new RegExp(/\s|$/g);
-			var length = this.length;
+			var length = this.length,
+				cur, classes, _elem, k = 0;
+			classes = (cls || "").match(core_rnotwhite) || [];
 			for (var i = 0; i < length; i++) {
-				if (!this[i].className.match(reg)) {
-					this[i].className += " " + cls;
+				_elem = this[i];
+				cur = _elem ? (" " + _elem.className + " ").replace(/\s/g, " ") : "";
+				while (k < classes.length) {
+					if (cur.indexOf(" " + classes[k] + " ") < 0) {
+						_elem.className += " " + classes[k];
+					}
+					k++;
 				}
 			}
 			return this;
 		},
-		removeClass: function(cls) {}
+		removeClass: function(cls) {
+			this.errors(cls);
+			var length = this.length,
+				cur, classes, _elem, k = 0;
+			classes = (cls || "").match(core_rnotwhite) || [];
+			for (var i = 0; i < length; i++) {
+				_elem = this[i];
+				cur = _elem ? (" " + _elem.className + " ").replace(/\s/g, " ") : "";
+				while (k < classes.length) {
+					if (cur.indexOf(" " + classes[k] + " ") > -1) {
+						_elem.className = _elem.className.replace(" " + classes[k], "");
+					}
+					k++;
+				}
+			}
+			return this;
+		}
 	};
 	Doer.prototype.init.prototype = Doer.prototype;
 	win.$d = Doer;
