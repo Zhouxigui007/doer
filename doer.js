@@ -91,11 +91,12 @@
 				_elem = this[i];
 				cur = _elem ? (" " + _elem.className + " ").replace(/\s/g, " ") : "";
 				while (k < classes.length) {
-					if (cur.indexOf(" " + classes[k] + " ") > -1) {
-						_elem.className = _elem.className.replace(" " + classes[k], "");
+					if (cur.indexOf(" " + classes[k] + " ") >= 0) {
+						cur = cur.replace(" " + classes[k] + " ", " ");
 					}
 					k++;
 				}
+				_elem.className = this.trim(cur);
 			}
 			return this;
 		}
